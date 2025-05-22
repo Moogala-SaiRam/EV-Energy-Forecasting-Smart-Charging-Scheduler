@@ -1,0 +1,48 @@
+# Byte-compiled / cache / temp files
+__pycache__/
+*.py[cod]
+*.so
+*.ipynb_checkpoints
+*.tmp
+*.log
+
+# Data and model artifacts
+models/
+*.joblib
+*.keras
+*.h5
+*.pkl
+*.ckpt
+*.npy
+*.npz
+
+# Datasets (keep only raw, ignore generated/large)
+data/*.csv
+!data/ev_charging_patterns.csv
+
+# Notebooks output
+notebooks/*.ipynb
+
+# Streamlit and API runtime files
+training_history.png
+
+# VSCode and OS files
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Environment
+.env
+.venv/
+venv/
+
+# Ignore requirements lock files
+poetry.lock
+Pipfile.lock
+
+# Ignore Docker artifacts
+*.dockerfile
+*.env.docker
+
+# Ignore README backup
+README-backup.md
