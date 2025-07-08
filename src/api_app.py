@@ -19,10 +19,10 @@ app = FastAPI(title="EV Energy Forecasting API")
 
 # Load model, scaler, and feature columns
 models_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'models'))
-model_path = os.path.join(os.path.dirname(__file__), 'cnn_gru_model.keras')
+MODEL_PATH = os.path.join(os.path.dirname(__file__), 'gru_model.keras')
 scaler = joblib.load(os.path.join(models_dir, 'scaler.joblib'))
 feature_cols = joblib.load(os.path.join(models_dir, 'feature_cols.joblib'))
-model = keras.models.load_model(model_path, compile=False)
+model = keras.models.load_model(MODEL_PATH, compile=False)
 
 class PredictRequest(BaseModel):
     vehicle_type: str
