@@ -9,17 +9,15 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'  # Suppress most TF warnings
 np.random.seed(42)
 tf.random.set_seed(42)
 
-def build_cnn_gru(input_shape):
+def build_gru_best(input_shape):
     inputs = keras.Input(shape=(input_shape, 1))
-    x = keras.layers.Conv1D(128, 5, activation='relu', padding='same')(inputs)
+    x = keras.layers.GRU(128, return_sequences=True, dropout=0.3, kernel_regularizer=keras.regularizers.l2(1e-3))(inputs)
     x = keras.layers.BatchNormalization()(x)
-    x = keras.layers.Conv1D(64, 3, activation='relu', padding='same')(x)
+    x = keras.layers.GRU(64, return_sequences=False, dropout=0.3, kernel_regularizer=keras.regularizers.l2(1e-3))(x)
     x = keras.layers.BatchNormalization()(x)
-    x = keras.layers.GRU(128, return_sequences=True, dropout=0.2, recurrent_dropout=0.2)(x)
-    x = keras.layers.GRU(64, return_sequences=False, dropout=0.2, recurrent_dropout=0.2)(x)
-    x = keras.layers.Dense(64, activation='relu')(x)
-    x = keras.layers.Dropout(0.2)(x)
-    x = keras.layers.Dense(32, activation='relu')(x)
+    x = keras.layers.Dense(64, activation='relu', kernel_regularizer=keras.regularizers.l2(1e-3))(x)
+    x = keras.layers.Dropout(0.3)(x)
+    x = keras.layers.Dense(32, activation='relu', kernel_regularizer=keras.regularizers.l2(1e-3))(x)
     outputs = keras.layers.Dense(1)(x)
     model = keras.Model(inputs, outputs)
     model.compile(optimizer=keras.optimizers.Adam(learning_rate=0.001), loss='mean_squared_error', metrics=['mae'])
@@ -34,8 +32,8 @@ def main():
     split = int(0.8 * len(X))
     X_train, X_test = X[:split], X[split:]
     y_train, y_test = y[:split], y[split:]
-    model = build_cnn_gru(X.shape[1])
-    print('Training CNN-GRU hybrid model...')
+    model = build_gru_best(X.shape[1])
+    print('Training GRU model (best practices)...')
     # Professional standard: batch_size=32, epochs=100, callbacks for best fit
     early_stop = keras.callbacks.EarlyStopping(monitor='val_loss', patience=10, restore_best_weights=True)
     reduce_lr = keras.callbacks.ReduceLROnPlateau(monitor='val_loss', factor=0.5, patience=5, min_lr=1e-5)
@@ -61,8 +59,8 @@ def main():
     plt.tight_layout()
     plt.savefig(os.path.join(os.path.dirname(__file__), 'training_history.png'))
     plt.close()
-    model.save(os.path.join(os.path.dirname(__file__), 'cnn_gru_model.keras'))
-    print('Model saved as cnn_gru_model.keras')
+    model.save(os.path.join(os.path.dirname(__file__), 'gru_model.keras'))
+    print('Model saved as gru_model.keras')
     print('Training history plot saved as training_history.png')
 
 if __name__ == "__main__":
