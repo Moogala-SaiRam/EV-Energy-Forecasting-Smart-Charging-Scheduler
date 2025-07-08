@@ -2,6 +2,9 @@ import streamlit as st
 import requests
 import pandas as pd
 import datetime
+import os
+from tensorflow import keras
+import joblib
 
 st.set_page_config(page_title="EV Smart Charging Dashboard", layout="wide")
 st.title("AI-Based EV Energy Forecasting & Smart Charging Scheduler")
@@ -10,6 +13,13 @@ TABS = ["Predict Energy Usage", "Smart Charging Suggestion", "Analytics & Admin"
 tab1, tab2, tab3 = st.tabs(TABS)
 
 API_URL = "http://localhost:8000"
+
+# Load the GRU model, scaler, and feature columns
+models_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'models'))
+MODEL_PATH = os.path.join(os.path.dirname(__file__), '..', 'src', 'gru_model.keras')
+scaler = joblib.load(os.path.join(models_dir, 'scaler.joblib'))
+feature_cols = joblib.load(os.path.join(models_dir, 'feature_cols.joblib'))
+model = keras.models.load_model(MODEL_PATH, compile=False)
 
 with tab1:
     st.header("Predict Energy Usage")
@@ -71,3 +81,5 @@ with tab3:
         st.write(pd.read_csv(uploaded).head())
     st.write("Model accuracy and analytics coming soon!")
     st.warning("Retrain and analytics features are placeholders in this demo.")
+
+# When making predictions, ensure input features are processed and ordered as in API/model_train
